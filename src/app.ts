@@ -1,37 +1,33 @@
-
 import { app, BrowserWindow, globalShortcut, remote, WebContents } from 'electron';
+import * as path from "path";
 
 let win: BrowserWindow = null, contents: WebContents = null;
 
 function createWindow () {
 
   win = new BrowserWindow({
-    width: 540,
-    height: 300,
+    width: 480,
+    height: 270,
+    x: 1440,
+    y: 745,
     frame: false,
     titleBarStyle: 'customButtonsOnHover',
-    // alwaysOnTop: true,
+    alwaysOnTop: true,
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       enableRemoteModule: true
     },
   })
 
-  win.loadURL('https://youtu.be/AhIEUVZxcq4')
+  win.loadURL('https://www.google.com')
 
   contents = win.webContents;
 
   win.on('enter-html-full-screen', () => {
     win.isFullScreen() && win.setFullScreen(false);
-  })
-}
+  });
 
-const fullScreen = () => {
-  setTimeout(() => {
-    contents.sendInputEvent({ keyCode: 'F', type: 'char' });
-    const consoleMain = remote.getGlobal('console');
-    consoleMain.log('Funcionou')
-  },
-  10000);
+  contents.openDevTools();
 }
 
 const createShortcuts = () => {
@@ -40,8 +36,7 @@ const createShortcuts = () => {
 
 app.whenReady()
   .then(createWindow)
-  .then(createShortcuts)
-  .then(fullScreen)
+  .then(createShortcuts);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
